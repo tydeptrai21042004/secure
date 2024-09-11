@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+        }
+        h1 {
+            margin: 20px 0;
+            color: #333;
+        }
+        p, li {
+            color: #555;
+        }
+        ul {
+            list-style-type: disc;
+            margin: 20px 0;
+            padding-left: 20px;
+        }
+        a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .code-block {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: monospace;
+            overflow-x: auto;
+        }
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Welcome to NCKH 2023</h1>
+            <p>Code for Pseudo Label-Guided Model Inversion Attack (AAAI 2023)</p>
+        </div>
+    </header>
+    <div class="container">
+        <h2>Framework</h2>
+        <p>This project is based on the paper <strong>Pseudo Label-Guided Model Inversion Attack via Conditional Generative Adversarial Network (AAAI 2023)</strong>.</p>
+        
+        <h2>Requirement</h2>
+        <p>Install the environment as follows:</p>
+        <div class="code-block">
+            <pre>
+# create conda environment
+conda create -n NCKH_2023 python=3.9
+conda activate NCKH_2023 
+# install pytorch 
+conda install pytorch==1.12.1 torchvision==0.13.1 cudatoolkit=11.3 -c pytorch -c conda-forge
+# install other dependencies
+pip install -r requirements.txt
+            </pre>
+        </div>
+        <p>All experiments were implemented on local features: NVIDIA RTX 1650 TI 4GB and Google Colaboratory with Tesla V4 15GB.</p>
+        
+        <h2>Preparation</h2>
+        <p>This code contains two scenarios:</p>
+        <ul>
+            <li>Training model with Differential Privacy</li>
+            <li>Attack model by Model Inversion with cGAN method</li>
+        </ul>
+
+        <h2>Dataset</h2>
+        <p>Datasets like CelebA, FFHQ, and FaceScrub are used for experiments (the script for downloading FaceScrub is provided; some links might be unavailable).</p>
+        <p>We follow the KED-MI to divide CelebA into private and public data. The private data of CelebA can be found at:</p>
+        <p><a href="https://drive.google.com/drive/folders/1uxSsbNwCKZcy3MQ4mA9rpwiJRhtpTas6?usp=sharing" target="_blank">CelebA Private Data</a></p>
+        <p>Organize your datasets as follows:</p>
+        <div class="code-block">
+            <pre>
+datasets
+├── celeba
+|   └── img_align_celeba
+|
+├── ffhq
+│   └── thumbnails128x128
+└── celeba_private_domain
+            </pre>
+        </div>
+
+        <h2>Model Inversion (LPG-MI folder)</h2>
+        <h3>Models</h3>
+        <p>You can train target models following KED-MI or contact <a href="mailto:duyfaker01@gmail.com">duyfaker01@gmail.com</a> for more details.</p>
+        <p>To calculate the KNN_dist, download the features of private data on the evaluation model in advance:</p>
+        <p><a href="https://drive.google.com/drive/folders/1Aj9glrxLoVlfrehCX2L9weFBx5PK6z-x?usp=sharing" target="_blank">Download Private Data Features</a></p>
+        <p>Place them in the folder <strong>./celeba_private_feats</strong>.</p>
+
+        <h3>Top-n Selection Strategy</h3>
+        <p>To get the pseudo-labeled public data using the top-n selection strategy, run the following command:</p>
+        <div class="code-block">
+            <pre>
+python top_n_selection.py --model=VGG16 --data_name=ffhq --top_n=30 --save_root=reclassified_public_data
+            </pre>
+        </div>
+
+        <h3>Pseudo Label-Guided cGAN</h3>
+        <p>To train the conditional GAN in stage-1, run the following command:</p>
+        <div class="code-block">
+            <pre>
+python train_cgan.py \
+--data_name=ffhq \
+--target_model=VGG16 \
+--calc_FID \
+--inv_loss_type=margin \
+--max_iteration=30000 \
+--alpha=0.2 \
+--private_data_root=./datasets/celeba_private_domain \
+--data_root=./reclassified_public_data/ffhq/VGG16_top30 \
+--results_root=PLG_MI_Results
+            </pre>
+        </div>
+
+        <h3>Image Reconstruction</h3>
+        <p>To reconstruct the private images of a specified class using the trained generator, run the following command:</p>
+        <div class="code-block">
+            <pre>
+python reconstruct.py \
+--model=VGG16 \
+--inv_loss_type=margin \
+--lr=0.1 \
+--iter_times=600 \
+--path_G=./PLG_MI_Results/ffhq/VGG16/gen_latest.pth.tar \
+--save_dir=PLG_MI_Inversion
+            </pre>
+        </div>
+
+        <h2>Examples of Reconstructed Face Images</h2>
+        <p>Include some examples or link to image files here.</p>
+
+        <h2>Make Private with Differential Privacy Methods (private_vision folder)</h2>
+        <p>This PyTorch codebase implements efficient training of differentially private (DP) vision neural networks.</p>
+        <p>We support various models from timm and torchvision for DP training.</p>
+
+        <h3>DP Training Example</h3>
+        <p>To train DP models on CIFAR10 and CIFAR100, run the following command:</p>
+        <div class="code-block">
+            <pre>
+python -m cifar_DP --lr 0.001 --epochs 3 --model beit_large_patch16_224
+            </pre>
+        </div>
+        <p>For more details, check the README or documentation.</p>
+
+        <h2>⚠️ Caution</h2>
+        <p>Batch normalization does not satisfy DP. Replace it with group/instance/layer normalization as needed.</p>
+
+        <h2>Acknowledgement</h2>
+        <p>This code is largely based on:</p>
+        <ul>
+            <li><a href="https://github.com/lxuechen/private-transformers" target="_blank">Private Transformers</a></li>
+            <li><a href="https://github.com/pytorch/opacus" target="_blank">Opacus</a></li>
+        </ul>
+    </div>
+    <p>Hiện tại bài toán của chúng tôi có bốn bước</p>
+    <ul>
+        <li>Train mô hình target có DP</li>
+        <li>Top_n_selection</li>
+        <li>Train CGan </li>
+        <li>Recontruct ( dùng 2 mô hình G và T ở trên)</li>
+    </ul>
+    <footer>
+        <p>&copy; 2023 NCKH Project</p>
+        <p>Select a script to run:</p>
+        <ul>
+            <li><a href="Gaussian-DP">Train Target</a></li>
+            <li><a href="top_n_selction">2</a></li>
+            <li><a href="TrainCgain">3</a></li>
+            <li><a href="reconstruct_cpu">4</a></li>
+            <li><a href="summary">5</a></li>
+            <li><a href="report">Report</a></li>
+        </ul>
+    </footer>
+    
+    
+
+</body>
+</html>

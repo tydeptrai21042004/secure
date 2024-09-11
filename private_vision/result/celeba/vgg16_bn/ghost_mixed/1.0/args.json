@@ -1,0 +1,14 @@
+{
+  "lr": 0.001,
+  "epochs": 2,
+  "bs": 32,
+  "eps": 1.0,
+  "grad_norm": 0.1,
+  "mode": "ghost_mixed",
+  "model": "vgg16_bn",
+  "mini_bs": 8,
+  "pretrained": 1,
+  "data": "celeba",
+  "result_root": "./result",
+  "no_tensorboard": false
+}

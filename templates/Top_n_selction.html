@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Design</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e5f8f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .sidebar {
+            width: 20%;
+            height: 100vh;
+            background-color: #7be1e1;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin: 20px 0;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .content {
+            margin-left: 25%;
+            padding: 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .section-header .train-time {
+            color: #000;
+            font-weight: bold;
+        }
+
+        .charts {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .chart {
+            width: 45%;
+            background-color: #f7f7f7;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer; /* Makes the chart look clickable */
+        }
+
+        .chart h2 {
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .chart canvas {
+            width: 100%;
+            height: 150px;
+        }
+
+        .train-options {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .train-options h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .train-options label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .train-options input[type="text"],
+        .train-options input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        .train-options input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .train-options input[type="submit"] {
+            background-color: #007BFF;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .train-options input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .file-content {
+            white-space: pre-wrap;
+            background-color: #000;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            font-family: "Courier New", Courier, monospace;
+        }
+
+        .file-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .file-list ul li {
+            cursor: pointer;
+            color: #007BFF;
+            margin-bottom: 10px;
+        }
+
+        .file-list ul li:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <ul>
+        <li><a href="Gaussian-DP">Train Target</a></li>
+        <li><a href="top_n_selction">2</a></li>
+        <li><a href="TrainCgain">3</a></li>
+        <li><a href="reconstruct_cpu">4</a></li>
+        <li><a href="summary">5</a></li>
+        <li><a href="report">Report</a></li>
+    </ul>
+</div>
+
+<div class="content">
+    <div class="section-header">
+        <h1>2</h1>
+        <div class="train-time">11 October, 2023 10:00 AM</div>
+    </div>
+
+
+    <div class="train-options">
+        <form action="/top_n_selction" method="POST">
+            <label for="model">Model (--model):</label>
+            <input type="text" id="model" name="model" value="DP_SGD">
+
+            <label for="data_name">Data Name (--data_name):</label>
+            <input type="text" id="data_name" name="data_name" value="celeba">
+
+            <label for="top_n">Top N (--top_n):</label>
+            <input type="text" id="top_n" name="top_n">
+
+            <label for="num_classes">Number of Classes (--num_classes):</label>
+            <input type="text" id="num_classes" name="num_classes" value="1000">
+
+            <label for="save_root">Save Root (--save_root):</label>
+            <input type="text" id="save_root" name="save_root" value="reclassified_public_data">
+
+            <label for="bs">Batch Size (--bs):</label>
+            <input type="text" id="bs" name="bs" value="32">
+
+            <label for="eps">Target Epsilon (--eps):</label>
+            <input type="text" id="eps" name="eps" value="2">
+
+            <input type="submit" value="Run Script">
+        </form>
+
+
+    </div>
+
+    <div class="file-content" id="fileContent"></div>
+
+    <div class="file-list" id="fileList">
+        <h2>Files in Folder:</h2>
+        <ul id="fileNames"></ul>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+    </div>
+    <script>
+        const fileContentElement = document.getElementById('fileContent');
+        const fileNamesElement = document.getElementById('fileNames');
+    function fetchFileContent(filename) {
+        fetch('/text/' + filename)
+            .then(response => {
+                if (response.ok) {
+                    return response.text(); 
+                } else {
+                    throw new Error('File not found');
+                }
+            })
+            .then(data => {
+                fileContentElement.textContent = data; 
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                fileContentElement.textContent = ''; 
+            });
+    }
+    
+    function fetchFileNames() {
+        fetch('/files')
+            .then(response => response.json())
+            .then(files => {
+                fileNamesElement.innerHTML = '';
+                files.forEach(file => {
+                    const li = document.createElement('li');
+                    li.textContent = file;
+                    li.onclick = () => {
+                        fetchFileContent(file);
+                    };
+                    fileNamesElement.appendChild(li);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    }
+    
+    setInterval(fetchFileNames, 5000);
+    </script>
+</body>
+</html>

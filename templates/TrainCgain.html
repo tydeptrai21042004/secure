@@ -1,0 +1,406 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Design</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e5f8f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .sidebar {
+            width: 20%;
+            height: 100vh;
+            background-color: #7be1e1;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin: 20px 0;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .content {
+            margin-left: 25%;
+            padding: 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .section-header .train-time {
+            color: #000;
+            font-weight: bold;
+        }
+
+        .charts {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .chart {
+            width: 45%;
+            background-color: #f7f7f7;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer; /* Makes the chart look clickable */
+        }
+
+        .chart h2 {
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .chart canvas {
+            width: 100%;
+            height: 150px;
+        }
+
+        .train-options {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .train-options h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .train-options label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .train-options input[type="text"],
+        .train-options input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        .train-options input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .train-options input[type="submit"] {
+            background-color: #007BFF;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .train-options input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .file-content {
+            white-space: pre-wrap;
+            background-color: #000;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            font-family: "Courier New", Courier, monospace;
+        }
+
+        .file-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .file-list ul li {
+            cursor: pointer;
+            color: #007BFF;
+            margin-bottom: 10px;
+        }
+
+        .file-list ul li:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <ul>
+        <li><a href="Gaussian-DP">Train Target</a></li>
+        <li><a href="top_n_selction">2</a></li>
+        <li><a href="TrainCgain">3</a></li>
+        <li><a href="reconstruct_cpu">4</a></li>
+        <li><a href="summary">5</a></li>
+        <li><a href="report">Report</a></li>
+    </ul>
+</div>
+
+<div class="content">
+    <div class="section-header">
+        <h1>3</h1>
+        <div class="train-time">11 October, 2023 10:00 AM</div>
+    </div>
+
+
+    <div class="train-options">
+        <form action="/TrainCgain" method="POST">
+            <div class="form-group">
+                <label for="data_root">Data Root (--data_root):</label>
+                <input type="text" id="data_root" name="data_root">
+            </div>
+
+            <div class="form-group">
+                <label for="data_name">Data Name (--data_name):</label>
+                <input type="text" id="data_name" name="data_name">
+            </div>
+
+            <div class="form-group">
+                <label for="target_model">Target Model (--target_model):</label>
+                <input type="text" id="target_model" name="target_model">
+            </div>
+
+            <div class="form-group">
+                <label for="private_data_root">Private Data Root (--private_data_root):</label>
+                <input type="text" id="private_data_root" name="private_data_root"
+                    value="./datasets/celeba_private_domain">
+            </div>
+
+            <div class="form-group">
+                <label for="eps">Target Epsilon (--eps):</label>
+                <input type="text" id="eps" name="eps" value="2">
+            </div>
+
+            <div class="form-group">
+                <label for="batch_size">Batch Size (--batch_size):</label>
+                <input type="text" id="batch_size" name="batch_size" value="32">
+            </div>
+
+            <div class="form-group">
+                <label for="eval_batch_size">Eval Batch Size (--eval_batch_size):</label>
+                <input type="text" id="eval_batch_size" name="eval_batch_size">
+            </div>
+
+            <div class="form-group">
+                <label for="gen_num_features">Gen Num Features (--gen_num_features):</label>
+                <input type="text" id="gen_num_features" name="gen_num_features" value="64">
+            </div>
+
+            <div class="form-group">
+                <label for="gen_dim_z">Gen Dim Z (--gen_dim_z):</label>
+                <input type="text" id="gen_dim_z" name="gen_dim_z" value="128">
+            </div>
+
+            <div class="form-group">
+                <label for="gen_bottom_width">Gen Bottom Width (--gen_bottom_width):</label>
+                <input type="text" id="gen_bottom_width" name="gen_bottom_width" value="4">
+            </div>
+
+            <div class="form-group">
+                <label for="gen_distribution">Gen Distribution (--gen_distribution):</label>
+                <input type="text" id="gen_distribution" name="gen_distribution" value="normal">
+            </div>
+
+            <div class="form-group">
+                <label for="dis_num_features">Dis Num Features (--dis_num_features):</label>
+                <input type="text" id="dis_num_features" name="dis_num_features" value="64">
+            </div>
+
+            <div class="form-group">
+                <label for="lr">Learning Rate (--lr):</label>
+                <input type="text" id="lr" name="lr" value="0.0002">
+            </div>
+
+            <div class="form-group">
+                <label for="beta1">Beta1 (--beta1):</label>
+                <input type="text" id="beta1" name="beta1" value="0.0">
+            </div>
+
+            <div class="form-group">
+                <label for="beta2">Beta2 (--beta2):</label>
+                <input type="text" id="beta2" name="beta2" value="0.9">
+            </div>
+
+            <div class="form-group">
+                <label for="seed">Seed (--seed):</label>
+                <input type="text" id="seed" name="seed" value="46">
+            </div>
+
+            <div class="form-group">
+                <label for="max_iteration">Max Iteration (--max_iteration):</label>
+                <input type="text" id="max_iteration" name="max_iteration" value="30000">
+            </div>
+
+            <div class="form-group">
+                <label for="n_dis">N Dis (--n_dis):</label>
+                <input type="text" id="n_dis" name="n_dis" value="5">
+            </div>
+
+            <div class="form-group">
+                <label for="num_classes">Num Classes (--num_classes):</label>
+                <input type="text" id="num_classes" name="num_classes" value="1000">
+            </div>
+
+            <div class="form-group">
+                <label for="loss_type">Loss Type (--loss_type):</label>
+                <input type="text" id="loss_type" name="loss_type" value="hinge">
+            </div>
+
+            <div class="form-group">
+                <label for="relativistic_loss">Relativistic Loss (--relativistic_loss):</label>
+                <input type="checkbox" id="relativistic_loss" name="relativistic_loss" value="True">
+            </div>
+
+            <div class="form-group">
+                <label for="calc_FID">Calc FID (--calc_FID):</label>
+                <input type="checkbox" id="calc_FID" name="calc_FID" value="True">
+            </div>
+
+            <div class="form-group">
+                <label for="results_root">Results Root (--results_root):</label>
+                <input type="text" id="results_root" name="results_root" value="results">
+            </div>
+
+            <div class="form-group">
+                <label for="no_tensorboard">No Tensorboard (--no_tensorboard):</label>
+                <input type="checkbox" id="no_tensorboard" name="no_tensorboard" value="True">
+            </div>
+
+            <div class="form-group">
+                <label for="no_image">No Image (--no_image):</label>
+                <input type="checkbox" id="no_image" name="no_image" value="True">
+            </div>
+
+            <div class="form-group">
+                <label for="checkpoint_interval">Checkpoint Interval (--checkpoint_interval):</label>
+                <input type="text" id="checkpoint_interval" name="checkpoint_interval" value="200">
+            </div>
+
+            <div class="form-group">
+                <label for="log_interval">Log Interval (--log_interval):</label>
+                <input type="text" id="log_interval" name="log_interval" value="100">
+            </div>
+
+            <div class="form-group">
+                <label for="eval_interval">Eval Interval (--eval_interval):</label>
+                <input type="text" id="eval_interval" name="eval_interval" value="1000">
+            </div>
+
+            <div class="form-group">
+                <label for="n_eval_batches">N Eval Batches (--n_eval_batches):</label>
+                <input type="text" id="n_eval_batches" name="n_eval_batches" value="100">
+            </div>
+
+            <div class="form-group">
+                <label for="n_fid_images">N FID Images (--n_fid_images):</label>
+                <input type="text" id="n_fid_images" name="n_fid_images" value="50000">
+            </div>
+
+            <div class="form-group">
+                <label for="resume">Resume (--resume):</label>
+                <input type="checkbox" id="resume" name="resume" value="True">
+            </div>
+
+            <input type="submit" value="Run Script">
+    </div>
+
+    <div class="file-content" id="fileContent"></div>
+
+    <div class="file-list" id="fileList">
+        <h2>Files in Folder:</h2>
+        <ul id="fileNames"></ul>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+    </div>
+    <script>
+        const fileContentElement = document.getElementById('fileContent');
+        const fileNamesElement = document.getElementById('fileNames');
+    function fetchFileContent(filename) {
+        fetch('/text/' + filename)
+            .then(response => {
+                if (response.ok) {
+                    return response.text(); 
+                } else {
+                    throw new Error('File not found');
+                }
+            })
+            .then(data => {
+                fileContentElement.textContent = data; 
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                fileContentElement.textContent = ''; 
+            });
+    }
+    
+    function fetchFileNames() {
+        fetch('/files')
+            .then(response => response.json())
+            .then(files => {
+                fileNamesElement.innerHTML = '';
+                files.forEach(file => {
+                    const li = document.createElement('li');
+                    li.textContent = file;
+                    li.onclick = () => {
+                        fetchFileContent(file);
+                    };
+                    fileNamesElement.appendChild(li);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    }
+    
+    setInterval(fetchFileNames, 5000);
+    </script>
+</body>
+</html>

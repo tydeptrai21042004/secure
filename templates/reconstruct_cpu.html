@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Design</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e5f8f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .sidebar {
+            width: 20%;
+            height: 100vh;
+            background-color: #7be1e1;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin: 20px 0;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .content {
+            margin-left: 25%;
+            padding: 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .section-header .train-time {
+            color: #000;
+            font-weight: bold;
+        }
+
+        .train-options {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .train-options h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .train-options label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .train-options input[type="text"],
+        .train-options input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        .train-options input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .train-options input[type="submit"] {
+            background-color: #007BFF;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .train-options input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        /* Style for the file lists container */
+        .file-lists-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+    
+        /* Style for individual file list containers */
+        .file-list {
+            flex: 1;
+            background-color: #f0f8ff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    
+        /* Style for file list headers */
+        .file-list h2 {
+            font-size: 20px;
+            color: #007BFF;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #007BFF;
+            padding-bottom: 5px;
+        }
+    
+        /* Style for the file list items */
+        .file-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+    
+        .file-list ul li {
+            font-size: 16px;
+            color: #333;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            background-color: #ffffff;
+            transition: background-color 0.3s, color 0.3s;
+            cursor: pointer;
+        }
+    
+        .file-list ul li:hover {
+            background-color: #007BFF;
+            color: #ffffff;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <ul>
+        <li><a href="Gaussian-DP">Train Target</a></li>
+        <li><a href="top_n_selction">2</a></li>
+        <li><a href="TrainCgain">3</a></li>
+        <li><a href="reconstruct_cpu">4</a></li>
+        <li><a href="summary">5</a></li>
+        <li><a href="report">Report</a></li>
+    </ul>
+</div>
+
+<div class="content">
+    <div class="section-header">
+        <h1>2</h1>
+        <div class="train-time">11 October, 2023 10:00 AM</div>
+    </div>
+
+    <div class="train-options">
+        <form action="/reconstruct_cpu" method="POST">
+            <label for="model">Model (--model):</label>
+            <input type="text" id="model" name="model" value="VGG16">
+
+            <label for="inv_loss_type">Inverse Loss Type (--inv_loss_type):</label>
+            <input type="text" id="inv_loss_type" name="inv_loss_type" value="margin">
+
+            <label for="lr">Learning Rate (--lr):</label>
+            <input type="text" id="lr" name="lr" value="0.1">
+
+            <label for="iter_times">Iteration Times (--iter_times):</label>
+            <input type="text" id="iter_times" name="iter_times" value="600">
+
+            <label for="gen_num_features">Generator Num Features (--gen_num_features, -gnf):</label>
+            <input type="text" id="gen_num_features" name="gen_num_features" value="64">
+
+            <label for="gen_dim_z">Generator Dimension Z (--gen_dim_z, -gdz):</label>
+            <input type="text" id="gen_dim_z" name="gen_dim_z" value="128">
+
+            <label for="gen_bottom_width">Generator Bottom Width (--gen_bottom_width, -gbw):</label>
+            <input type="text" id="gen_bottom_width" name="gen_bottom_width" value="4">
+
+            <label for="gen_distribution">Generator Distribution (--gen_distribution, -gd):</label>
+            <input type="text" id="gen_distribution" name="gen_distribution" value="normal">
+
+            <label for="save_dir">Save Directory (--save_dir):</label>
+            <input type="text" id="save_dir" name="save_dir" value="PLG_MI_Inversion">
+
+            <label for="path_G">Path G (--path_G):</label>
+            <input type="text" id="path_G" name="path_G" value="">
+
+            <input type="submit" value="Run Script">
+        </form>
+    </div>
+
+    <div class="file-lists-container">
+        <!-- Folder 1 File List -->
+        <div class="file-list" id="fileList1">
+            <h2>Folder 1 Files</h2>
+            <ul id="fileNames1"></ul>
+        </div>
+    
+        <!-- Folder 2 File List -->
+        <div class="file-list" id="fileList2">
+            <h2>Folder 2 Files</h2>
+            <ul id="fileNames2"></ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    function fetchFileNames(folder, elementId) {
+        fetch('/files/' + folder)
+            .then(response => response.json())
+            .then(files => {
+                const fileListElement = document.getElementById(elementId);
+                fileListElement.innerHTML = '';
+                files.forEach(file => {
+                    const li = document.createElement('li');
+                    li.textContent = file;
+                    li.onclick = () => {
+                        if (folder === 'folder1') {
+                            document.getElementById('model').value = file;
+                        } else if (folder === 'folder2') {
+                            document.getElementById('path_G').value = file;
+                        }
+                    };
+                    fileListElement.appendChild(li);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    // Make sure the IDs used here match the IDs in the HTML
+    setInterval(() => {
+        fetchFileNames('folder1', 'fileNames1');
+        fetchFileNames('folder2', 'fileNames2');
+    }, 5000);
+</script>
+</body>
+</html>

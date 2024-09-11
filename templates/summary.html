@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Design</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e5f8f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .sidebar {
+            width: 20%;
+            height: 100vh;
+            background-color: #7be1e1;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin: 20px 0;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .content {
+            margin-left: 25%;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        /* Style for the file lists container */
+        .file-lists-container {
+            width: 30%; /* Make the file list container 30% of the content width */
+        }
+    
+        /* Style for individual file list containers */
+        .file-list {
+            background-color: #f0f8ff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+    
+        /* Style for file list headers */
+        .file-list h2 {
+            font-size: 20px;
+            color: #007BFF;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #007BFF;
+            padding-bottom: 5px;
+        }
+    
+        /* Style for the file list items */
+        .file-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+    
+        .file-list ul li {
+            font-size: 16px;
+            color: #333;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            background-color: #ffffff;
+            transition: background-color 0.3s, color 0.3s;
+            cursor: pointer;
+        }
+    
+        .file-list ul li:hover {
+            background-color: #007BFF;
+            color: #ffffff;
+        }
+
+        /* Highlight class for selected file */
+        .file-list ul li.highlighted {
+            background-color: #007BFF;
+            color: #ffffff;
+        }
+        
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        
+        .blinking-cursor::after {
+            content: ' ';
+            display: inline-block;
+            width: 8px;
+            background-color: #d3d3d3;
+            animation: blink 1s infinite;
+        }
+        
+        #fileContent::after {
+            content: ' ';
+            display: inline-block;
+            width: 8px;
+            background-color: #d3d3d3;
+            animation: blink 1s infinite;
+        }
+        
+        /* Style for file content and image display */
+        .file-content-container {
+            width: 70%; /* Make the content display 70% of the content width */
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        #fileContentDisplay {
+            padding: 20px;
+            background-color: #2e2e2e;
+            border-radius: 10px;
+            color: #d3d3d3;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        #imageDisplay {
+            text-align: center;
+        }
+        
+        #image {
+            max-width: 100%;
+            border: 2px solid #555;
+            border-radius: 10px;
+            display: none; /* Hide initially */
+        }
+        .delete-button {
+            background-color: #ff4c4c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .delete-button:hover {
+            background-color: #e33b3b;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <ul>
+        <li><a href="Gaussian-DP">Train Target</a></li>
+        <li><a href="top_n_selction">2</a></li>
+        <li><a href="TrainCgain">3</a></li>
+        <li><a href="reconstruct_cpu">4</a></li>
+        <li><a href="summary">5</a></li>
+        <li><a href="report">Report</a></li>
+    </ul>
+</div>
+
+<div class="content">
+    <div class="file-lists-container">
+        <!-- Folder 1 File List -->
+        <div class="file-list" id="fileList1">
+            <h2>Folder 1 Files</h2>
+            <ul id="fileNames1"></ul>
+        </div>
+    
+        <!-- Folder 2 File List -->
+        <div class="file-list" id="fileList2">
+            <h2>Folder 2 Files</h2>
+            <ul id="fileNames2"></ul>
+        </div>
+    </div>
+
+    <div class="file-content-container">
+        <div id="fileContentDisplay">
+            <pre id="fileContent" style="white-space: pre-wrap;"></pre>
+        </div>
+
+        <div id="imageDisplay">
+            <img id="image" src="" alt="Image" />
+        </div>
+    </div>
+</div>
+
+<script>
+    let previouslySelected = null; // To track previously selected file
+
+    function fetchAndDisplayFileContent(folder, fileNameWithoutExtension) {
+        const filePath = `/files/${folder}/${fileNameWithoutExtension}.txt`;
+        fetch(filePath)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Text file not found');
+                }
+                return response.text();
+            })
+            .then(content => {
+                const contentDisplay = document.getElementById('fileContent');
+                contentDisplay.textContent = content;
+                document.getElementById('fileContentDisplay').style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error fetching text file:', error);
+                document.getElementById('fileContentDisplay').style.display = 'none';
+                alert('Text file not found');
+            });
+    }
+
+    function fetchAndDisplayImage(folder, fileNameWithoutExtension) {
+        const imagePath = `/files/${folder}/${fileNameWithoutExtension}.png`;
+        const image = document.getElementById('image');
+
+        // Hide the image initially
+        image.style.display = 'none';
+
+        fetch(imagePath)
+            .then(response => {
+                if (response.ok) {
+                    image.src = imagePath;  // Set the source of the img tag to the PNG path
+                    image.style.display = 'block';  // Show the image
+                } else {
+                    throw new Error('Image file not found');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching image file:', error);
+                image.style.display = 'none';  // Hide the image if not found
+                alert('Image file not found');
+            });
+    }
+
+    function deleteFiles(folder, fileNameWithExtension) {
+        // Ask for confirmation before deleting
+        const confirmed = confirm(`Are you sure you want to delete "${fileNameWithExtension}"? This action cannot be undone.`);
+    
+        if (!confirmed) {
+            return; // If the user cancels, do nothing
+        }
+    
+        // If confirmed, proceed with deletion
+        fetch(`/delete/${folder}/${fileNameWithExtension}`, {
+            method: 'DELETE'
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error(`Failed to delete: ${fileNameWithExtension}`);
+            }
+            return response.json();
+        }).then(data => {
+            alert(data.message);
+        }).catch(error => {
+            console.error(error);
+            alert('Some files could not be deleted');
+        });
+    }
+    
+    
+    
+
+    function fetchFileNames(folder, elementId) {
+        fetch(`/files/${folder}`)
+            .then(response => response.json())
+            .then(files => {
+                const fileListElement = document.getElementById(elementId);
+                fileListElement.innerHTML = '';
+                const uniqueFiles = new Set();
+
+                files.forEach(file => {
+                    const fileNameWithoutExtension = file.split('.')[0];
+                    if (!uniqueFiles.has(fileNameWithoutExtension)) {
+                        uniqueFiles.add(fileNameWithoutExtension);
+
+                        const li = document.createElement('li');
+                        li.textContent = fileNameWithoutExtension;  // Display filename without extension
+
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'Delete';
+                        deleteButton.className = 'delete-button';
+                        deleteButton.onclick = (e) => {
+                            e.stopPropagation(); // Prevent triggering the file selection
+                            deleteFiles(folder, fileNameWithoutExtension);
+                        };
+
+                        li.onclick = () => {
+                            // Remove highlight from previously selected item
+                            if (previouslySelected) {
+                                previouslySelected.classList.remove('highlighted');
+                            }
+
+                            // Add highlight to the clicked item
+                            li.classList.add('highlighted');
+                            previouslySelected = li;
+
+                            fetchAndDisplayFileContent(folder, fileNameWithoutExtension);
+                            fetchAndDisplayImage(folder, fileNameWithoutExtension);
+                        };
+
+                        li.appendChild(deleteButton);
+                        fileListElement.appendChild(li);
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching file list:', error));
+    }
+
+    // Initialize file lists
+    setInterval(() => {
+        fetchFileNames('folder1', 'fileNames1');
+        fetchFileNames('folder2', 'fileNames2');
+    }, 1000); // Refresh every 10 seconds
+
+
+
+</script>
+
+</body>
+</html>

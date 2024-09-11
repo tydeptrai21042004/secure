@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KMA - Gaussian-DP</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        h1 {
+            text-align: center;
+            color: #4a90e2;
+        }
+        form {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        input[type="submit"]:hover {
+            background-color: #357abd;
+        }
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <form action="/Gaussian-DP" method="POST">
+        <h1>Gaussian - DP</h1>
+        <label for="lr">Learning Rate (--lr):</label>
+        <input type="text" id="lr" name="lr" value="0.001">
+
+        <label for="epochs">Number of Epochs (--epochs):</label>
+        <input type="text" id="epochs" name="epochs" value="100">
+
+        <label for="bs">Batch Size (--bs):</label>
+        <input type="text" id="bs" name="bs" value="32">
+
+        <label for="eps">Target Epsilon (--eps):</label>
+        <input type="text" id="eps" name="eps" value="2">
+
+        <label for="grad_norm">Max Grad Norm (--grad_norm):</label>
+        <input type="text" id="grad_norm" name="grad_norm" value="0.1">
+
+        <label for="mode">Mode (--mode):</label>
+        <input type="text" id="mode" name="mode" value="ghost_mixed">
+
+        <label for="model">Model (--model):</label>
+        <input type="text" id="model" name="model" value="vgg16_bn">
+
+        <label for="mini_bs">Mini Batch Size (--mini_bs):</label>
+        <input type="text" id="mini_bs" name="mini_bs" value="8">
+
+        <label for="pretrained">Pretrained (--pretrained):</label>
+        <input type="text" id="pretrained" name="pretrained" value="1">
+
+        <label for="data">Data (--data):</label>
+        <input type="text" id="data" name="data" value="celeba">
+
+        <label for="result_root">Result Root (--result_root):</label>
+        <input type="text" id="result_root" name="result_root" value="./result">
+
+        <label for="no_tensorboard">
+            <input type="checkbox" id="no_tensorboard" name="no_tensorboard">No Tensorboard (--no_tensorboard)
+        </label>
+
+        <input type="submit" value="Run Script">
+    </form>
+</body>
+</html>

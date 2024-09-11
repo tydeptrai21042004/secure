@@ -1,0 +1,8 @@
+1.Đọc file tensor
+tensorboard --logdir=E:\DO_AN\private_vision\result\celeba\vgg16_bn\ghost_mixed
+2.Train top_n_ select:
+python top_n_selection.py --model=NON_DP --data_name=celeba --top_n=30 --save_root=reclassified_public_data
+3.train Cgan:
+python train_cgan.py --data_name=celeba --target_model=DP_SGD --calc_FID --inv_loss_type=margin  --alpha=0.2 --private_data_root=E:/DO_AN/LPG-MI/datasets/celeba_private_domain --data_root=E:/DO_AN/LPG-MI/reclassified_public_data/celeba/DP_SGD_top30 --results_root=PLG_MI_Results --num_classes=2 --n_fid_images=10 --max_iteration=1000
+4. Tái tạo ảnh: 
+python reconstruct_cpu.py --model=VGG_MixedGhost --inv_loss_type=margin --lr=0.1 --iter_times=600 --path_G=./PLG_MI_Results/celeba/NON_DP/gen_latest.pth.tar --save_dir=PLG_MI_Inversion
